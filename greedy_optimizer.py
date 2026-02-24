@@ -37,7 +37,35 @@ def maximize_deliveries(time_windows):
     # Hint: What greedy choice gives you the most room for future deliveries?
     # Hint: Think about sorting by a specific attribute
     
-    pass  # Delete this and write your code
+    pass  
+def optimize_truck_load(packages, weight_limit):
+    # Sort by value-to-weight ratio descending
+    packages_sorted = sorted(
+        packages,
+        key=lambda x: x["value"] / x["weight"],
+        reverse=True
+    )
+    
+    total_value = 0
+    remaining_weight = weight_limit
+    
+    for package in packages_sorted:
+        if remaining_weight <= 0:
+            break
+            
+        weight = package["weight"]
+        value = package["value"]
+        
+        if weight <= remaining_weight:
+            total_value += value
+            remaining_weight -= weight
+        else:
+            # Take fraction
+            fraction = remaining_weight / weight
+            total_value += value * fraction
+            remaining_weight = 0
+    
+    return total_value
 
 
 # ============================================================================
@@ -76,7 +104,25 @@ def optimize_truck_load(packages, weight_limit):
     # Hint: What ratio determines which packages are most valuable per pound?
     # Hint: You can take fractions - if you have 5 lbs capacity left and a 10 lb package, take 0.5 of it
     
-    pass  # Delete this and write your code
+    pass  
+import heapq
+
+def minimize_drivers(deliveries):
+    # Sort by start time
+    deliveries.sort(key=lambda x: x[0])
+    
+    # Min heap to track earliest finishing driver
+    driver_heap = []  # stores end times
+    
+    for start, end in deliveries:
+        if driver_heap and driver_heap[0] <= start:
+            # Reuse driver
+            heapq.heappop(driver_heap)
+        
+        # Assign driver (new or reused)
+        heapq.heappush(driver_heap, end)
+    
+    return len(driver_heap)
 
 
 # ============================================================================
@@ -112,7 +158,27 @@ def minimize_drivers(deliveries):
     # Hint: How do you know if a delivery overlaps with another?
     # Hint: Can you assign a delivery to an existing driver, or do you need a new one?
     
-    pass  # Delete this and write your code
+    pass  
+import heapq
+
+def minimize_drivers(deliveries):
+    # Sort deliveries by start time
+    deliveries.sort(key=lambda x: x[0])
+    
+    # Min-heap to track when drivers become available
+    driver_heap = []  # stores end times of assigned deliveries
+    
+    for start, end in deliveries:
+        
+        # If the earliest available driver is free
+        if driver_heap and driver_heap[0] <= start:
+            heapq.heappop(driver_heap)
+        
+        # Assign this delivery (either reused driver or new driver)
+        heapq.heappush(driver_heap, end)
+    
+    # Number of drivers used = size of heap
+    return len(driver_heap)
 
 
 # ============================================================================
@@ -140,7 +206,7 @@ def test_package_prioritization():
     result1 = maximize_deliveries(test1)
     print(f"Test 1: Non-overlapping")
     print(f"  Expected: 3 deliveries")
-    print(f"  Got: {len(result1)} deliveries")
+    print(f"  Got: len(result1) deliveries")
     print(f"  {'✓ PASS' if len(result1) == 3 else '✗ FAIL'}\n")
     
     # Test case 2: All overlapping (should select 1)
@@ -297,9 +363,9 @@ if __name__ == "__main__":
     
     # Uncomment these as you complete each part:
     
-    # test_package_prioritization()
-    # test_truck_loading()
-    # test_driver_assignment()
-    # benchmark_scenarios()
+    test_package_prioritization()
+    test_truck_loading()
+    test_driver_assignment()
+    benchmark_scenarios()
     
     print("\n⚠ Uncomment the test functions in the main block to run tests!")
